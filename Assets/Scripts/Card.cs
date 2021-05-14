@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
-    // Start is called before the first frame update
     [SerializeField] private int cardValue;
     [SerializeField] private Moveable _moveable;
     [SerializeField] TextMeshProUGUI _leftUpperNumberTmp;
     [SerializeField] TextMeshProUGUI _centerNumberTmp;
     
+    // Start is called before the first frame update
     void Start()
     {
         _leftUpperNumberTmp.SetText(cardValue.ToString());
