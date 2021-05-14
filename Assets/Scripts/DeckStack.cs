@@ -1,16 +1,18 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DeckStack : MonoBehaviour
 {
     [SerializeField] int _deckMaxSize;
+    [SerializeField] GameManager _gameManager;
     private Stack<Card> deck;
-    private bool isStackFull;
+    private bool _isStackFull;
+    private int _sameCardIteration;
 
     // Start is called before the first frame update
     void Start()
     {
+        _sameCardIteration = 0;
         deck = new Stack<Card>();
     }
 
@@ -21,35 +23,104 @@ public class DeckStack : MonoBehaviour
         newCard.DisbaleMoveing();
         if (deck.Count == 0)
         {
-            SetNewCardPosition(newCard);
-            deck.Push(newCard);
-        }
-        else
-        {
-            if (newCard.GetCardValue() == deck.Peek().GetCardValue())
-            {
-                Destroy(newCard.gameObject);
-                Card tempCard = deck.Pop();
-                tempCard.SetCardValue(tempCard.GetCardValue() * 2);
-                AddCardToDeck(tempCard);
-            }
-            else
+            if(newCard.GetCardType() == CardType.NORMAL || newCard.GetCardType() == CardType.BOMB)
             {
                 SetNewCardPosition(newCard);
                 deck.Push(newCard);
             }
-            if (deck.Count == _deckMaxSize)
-            {
-                isStackFull = true;
-            }
             else
             {
-                isStackFull = false;
+                Destroy(newCard.gameObject);
+            }
+        }
+        else
+        {
+            if ( newCard.GetCardType() == CardType.NORMAL || newCard.GetCardType() == CardType.BOMB)
+            {
+                if (newCard.GetCardValue() == deck.Peek().GetCardValue())
+                {
+                    if(newCard.GetCardType() == CardType.BOMB || deck.Peek().GetCardType() == CardType.BOMB)
+                    {
+                        int scoreForBombCard = newCard.GetCardValue();
+                        Destroy(newCard.gameObject);
+                        while(deck.Count > 0)
+                        {
+                            Card tempCard = deck.Pop();
+                            scoreForBombCard = scoreForBombCard + tempCard.GetCardValue();
+                            print(tempCard.GetCardValue());
+                            Destroy(tempCard.gameObject);
+                        }
+                        _gameManager.UpdateScore(scoreForBombCard);
+                    }
+                    else
+                    {
+                        _sameCardIteration = _sameCardIteration + 1;
+                        Destroy(newCard.gameObject);
+                        Card tempCard = deck.Pop();
+                        tempCard.SetCardValue(tempCard.GetCardValue() * 2);
+                        //print(_sameCardIteration+" "+tempCard.GetCardValue());
+                        _gameManager.UpdateScore(tempCard.GetCardValue() * _sameCardIteration);
+                        AddCardToDeck(tempCard);
+                    }
+                }
+                else
+                {
+                    SetNewCardPosition(newCard);
+                    deck.Push(newCard);
+                    _sameCardIteration = 0;
+                }
+                if (deck.Count == _deckMaxSize)
+                {
+                    _isStackFull = true;
+                }
+                else
+                {
+                    _isStackFull = false;
+                }
+            }
+            if( newCard.GetCardType() == CardType.RAT)
+            {
+                // Remove new card and destroy half of deck and add total score to Scoreboard
+                Destroy(newCard.gameObject);
+                int scoreForRatCard = 0;
+                int deckSize = deck.Count;
+                for (int loopCounter = 0; loopCounter < deckSize / 2; loopCounter++)
+                {
+                    Card tempCard = deck.Pop();
+                    scoreForRatCard = scoreForRatCard + tempCard.GetCardValue();
+                    Destroy(tempCard.gameObject);
+                }
+                _gameManager.UpdateScore(scoreForRatCard);
+            }
+            if (newCard.GetCardType() == CardType.WILD)
+            {
+                // Chnage new card's value to first card's value
+                int newValue = GetTopCardValue();
+                if (newValue == 0)
+                {
+                    newValue = 2; // If it's only card in deck set 2 value to card and set it in to deck.
+                }
+                newCard.SetCardValue(newValue);
+                newCard.SetCardType(CardType.NORMAL);
+                AddCardToDeck(newCard);
+            }
+            if (newCard.GetCardType() == CardType.NUMBERCHANGER)
+            {
+                // Remove new Card and change value of first card's to value of second card's value. 
+                Card tempCard = deck.Pop();
+                int newValue = GetTopCardValue();
+                if(newValue == 0)
+                {
+                    newValue = tempCard.GetCardValue(); // If it's only card in deck set own value to card and set it in to deck again.
+                }
+                tempCard.SetCardValue(newValue);
+                Destroy(newCard.gameObject);
+                AddCardToDeck(tempCard);
             }
         }
     }
 
-    // Get position of top card and is deck is empty return starting place
+    // Get position of top card and is deck is empty return starting place.
     public Vector2 GetPositionOfTopCard()
     {
         if(deck.Count == 0)
@@ -76,13 +147,27 @@ public class DeckStack : MonoBehaviour
     } 
 
 
-    // If stack is full but last card is same, Allow Player to add card
-    public bool IsDeckFull(int cardVal)
+    // If stack is full but last card is same, Allow Player to add card.
+    public bool IsCardAllowInDeck(int cardVal,CardType cardType)
     {
-        return (isStackFull && cardVal != GetTopCardValue());
+        if (_isStackFull)
+        {
+            if (cardVal == GetTopCardValue() || (cardType != CardType.NORMAL && cardType != CardType.BOMB) )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return true;
+        }
     }
 
-    // Return value of top card from deck
+    // Return value of top card from deck.
     public int GetTopCardValue()
     {
         if (deck.Count == 0)
