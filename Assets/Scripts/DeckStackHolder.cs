@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DeckStackHolder : MonoBehaviour
@@ -9,7 +7,7 @@ public class DeckStackHolder : MonoBehaviour
     [SerializeField] float _minDistance;
 
     // If any card is in range return nearest card
-    public Tuple<bool, DeckStack> GetNearestDeckIfAny(Vector2 cardPosition, int cardVal)
+    public Tuple<bool, DeckStack> GetNearestDeckIfAny(Vector2 cardPosition, int cardVal,CardType cardType)
     {
         bool isAnyDeckIsNear = false;
         float tempMinDistance = _minDistance;
@@ -18,7 +16,7 @@ public class DeckStackHolder : MonoBehaviour
         for (int loopCounter = 0; loopCounter< _decks.Length; loopCounter++)
         {
             float cardDistance = Vector2.Distance(cardPosition, _decks[loopCounter].GetPositionOfTopCard());
-            if (cardDistance < tempMinDistance && !_decks[loopCounter].IsDeckFull(cardVal))
+            if (cardDistance < tempMinDistance && _decks[loopCounter].IsCardAllowInDeck(cardVal, cardType))
             {
                 nearestDeck = _decks[loopCounter];
                 tempMinDistance = cardDistance;
