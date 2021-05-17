@@ -6,11 +6,9 @@ public class Moveable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 {
     [SerializeField] DeckStackHolder _deckStackHolder;
     [SerializeField] Card _thisCard;
-    private bool _isDragging;
     // Onclick on object stop object from moving
     public void OnBeginDrag(PointerEventData eventData)
     {
-        _isDragging = true;
     }
     public void OnDrag(PointerEventData eventData)
     {
