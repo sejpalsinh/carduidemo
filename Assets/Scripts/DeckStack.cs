@@ -7,18 +7,16 @@ public class DeckStack : MonoBehaviour
     [SerializeField] GameManager _gameManager;
     private Stack<Card> deck;
     private bool _isStackFull;
-    private int _sameCardIteration;
 
     // Start is called before the first frame update
     void Start()
     {
-        _sameCardIteration = 0;
         deck = new Stack<Card>();
     }
 
     
     // Add new card and if value is same make upper card double
-    public void AddCardToDeck(Card newCard)
+    public void AddCardToDeck(Card newCard,int _sameCardIteration)
     {
         newCard.DisbaleMoveing();
         if (deck.Count == 0)
@@ -54,20 +52,19 @@ public class DeckStack : MonoBehaviour
                     }
                     else
                     {
-                        _sameCardIteration = _sameCardIteration + 1;
                         Destroy(newCard.gameObject);
                         Card tempCard = deck.Pop();
+                        _sameCardIteration = _sameCardIteration + 1;
                         tempCard.SetCardValue(tempCard.GetCardValue() * 2);
                         //print(_sameCardIteration+" "+tempCard.GetCardValue());
                         _gameManager.UpdateScore(tempCard.GetCardValue() * _sameCardIteration);
-                        AddCardToDeck(tempCard);
+                        AddCardToDeck(tempCard, _sameCardIteration);
                     }
                 }
                 else
                 {
                     SetNewCardPosition(newCard);
                     deck.Push(newCard);
-                    _sameCardIteration = 0;
                 }
                 if (deck.Count == _deckMaxSize)
                 {
@@ -102,7 +99,7 @@ public class DeckStack : MonoBehaviour
                 }
                 newCard.SetCardValue(newValue);
                 newCard.SetCardType(CardType.NORMAL);
-                AddCardToDeck(newCard);
+                AddCardToDeck(newCard, _sameCardIteration);
             }
             if (newCard.GetCardType() == CardType.NUMBERCHANGER)
             {
@@ -115,7 +112,7 @@ public class DeckStack : MonoBehaviour
                 }
                 tempCard.SetCardValue(newValue);
                 Destroy(newCard.gameObject);
-                AddCardToDeck(tempCard);
+                AddCardToDeck(tempCard, _sameCardIteration);
             }
         }
     }

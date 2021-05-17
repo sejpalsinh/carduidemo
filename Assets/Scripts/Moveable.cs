@@ -27,7 +27,7 @@ public class Moveable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         Tuple<bool, DeckStack> isAnyNearCard = _deckStackHolder.GetNearestDeckIfAny(_thisCard.GetPosition(), _thisCard.GetCardValue(), _thisCard.GetCardType());
         if (isAnyNearCard.Item1)
         {
-            isAnyNearCard.Item2.AddCardToDeck(_thisCard);
+            isAnyNearCard.Item2.AddCardToDeck(_thisCard,0);
         }
         //print("Drag End");
     }
