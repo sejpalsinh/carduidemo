@@ -14,11 +14,9 @@ public class DeckStack : MonoBehaviour
         deck = new Stack<Card>();
     }
 
-    
     // Add new card and if value is same make upper card double
     public void AddCardToDeck(Card newCard,int _sameCardIteration)
     {
-        newCard.DisbaleMoveing();
         if (deck.Count == 0)
         {
             if(newCard.GetCardType() == CardType.NORMAL || newCard.GetCardType() == CardType.BOMB)
@@ -128,7 +126,6 @@ public class DeckStack : MonoBehaviour
         return deck.Peek().GetPosition();
     }
 
-
     // Set location for card
     private void SetNewCardPosition(Card newCard)
     {
@@ -142,7 +139,6 @@ public class DeckStack : MonoBehaviour
         }
         newCard.transform.SetParent(gameObject.transform);
     } 
-
 
     // If stack is full but last card is same, Allow Player to add card.
     public bool IsCardAllowInDeck(int cardVal,CardType cardType)

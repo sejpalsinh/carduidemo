@@ -16,23 +16,9 @@ public class Card : MonoBehaviour
     // Start is called before the first frame update
     [SerializeField] private int _cardValue;
     [SerializeField] private CardType _cardType;
-    [SerializeField] private Moveable _moveable;
     [SerializeField] TextMeshProUGUI _leftUpperNumberTmp;
     [SerializeField] TextMeshProUGUI _centerNumberTmp;
     
-    // Set card number to card
-    void Start()
-    {
-        if(_cardType == CardType.NORMAL)
-        {
-            _leftUpperNumberTmp.SetText(_cardValue.ToString());
-            _centerNumberTmp.SetText(_cardValue.ToString());
-        }
-        if(_cardType == CardType.BOMB)
-        {
-            _leftUpperNumberTmp.SetText(_cardValue.ToString());
-        }
-    }
 
     // Change card value
     public void SetCardValue(int cardVal)
@@ -40,6 +26,20 @@ public class Card : MonoBehaviour
         _cardValue = cardVal;
         _leftUpperNumberTmp.SetText(cardVal.ToString());
         _centerNumberTmp.SetText(cardVal.ToString());
+    }
+    public void SetCardValue(int cardVal,CardType _cardType)
+    {
+        _cardValue = cardVal;
+        _leftUpperNumberTmp.SetText(cardVal.ToString());
+        _centerNumberTmp.SetText(_cardType.ToString());
+        SetCardType(_cardType);
+    }
+    public void SetCardValue(CardType _cardType)
+    {
+        _cardValue = 0;
+        _leftUpperNumberTmp.SetText(_cardType.ToString());
+        _centerNumberTmp.SetText(_cardType.ToString());
+        SetCardType(_cardType);
     }
 
     // Return value of card
@@ -62,7 +62,7 @@ public class Card : MonoBehaviour
     // Remove moveable script from card so player can not drag
     public void DisbaleMoveing()
     {
-        Destroy(_moveable);
+        Destroy(gameObject.GetComponent<Moveable>());
     }
 
     public CardType GetCardType()

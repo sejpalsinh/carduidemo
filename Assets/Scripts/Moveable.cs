@@ -4,13 +4,13 @@ using UnityEngine.EventSystems;
 
 public class Moveable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [SerializeField] DeckStackHolder _deckStackHolder;
-    [SerializeField] Card _thisCard;
-    private bool _isDragging;
+    
+    private Card _thisCard;
+    private DeckStackHolder _deckStackHolder;
     // Onclick on object stop object from moving
     public void OnBeginDrag(PointerEventData eventData)
     {
-        _isDragging = true;
+
     }
     public void OnDrag(PointerEventData eventData)
     {
@@ -28,7 +28,17 @@ public class Moveable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         if (isAnyNearCard.Item1)
         {
             isAnyNearCard.Item2.AddCardToDeck(_thisCard,0);
+            EventManager.SetNewCard.Invoke();
+            _thisCard.DisbaleMoveing();
         }
         //print("Drag End");
+    }
+    public void SetDeckStackHolder(DeckStackHolder deckStackHolder)
+    {
+        _deckStackHolder = deckStackHolder;
+    }
+    public void SetCard(Card thisCard)
+    {
+        _thisCard = thisCard;
     }
 }
